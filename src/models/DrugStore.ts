@@ -2,14 +2,14 @@
 import { Model, DataTypes, } from 'sequelize';
 import sequelize from '../config/db';
 
-
-
-class Drug extends Model {
+class DrugStore extends Model {
 
   public id!: number;
-  public uuid!: string; 
+  public uuid!: string;
   public name!: string;
-  public description!: string;
+  public latitude!: number;
+  public longitude!: number;
+  public phone_number!: string;
 
   // timestamps!
   public readonly createdAt!: Date;
@@ -17,7 +17,7 @@ class Drug extends Model {
 
 }
 
-Drug.init({
+DrugStore.init({
   id: {
     type: DataTypes.INTEGER.UNSIGNED,
     autoIncrement: true,
@@ -32,15 +32,23 @@ Drug.init({
     type: new DataTypes.STRING(256),
     allowNull: false,
   },
-  description: {
-    type: new DataTypes.STRING(256),
+  latitude: {
+    type: new DataTypes.FLOAT,
+    allowNull: false,
+  },
+  longitude: {
+    type: new DataTypes.FLOAT,
+    allowNull: false,
+  },
+  phone_number: {
+    type: new DataTypes.STRING(15),
     allowNull: true,
   },
 }, {
-  tableName: 'drugs',
+  tableName: 'drugstores',
   sequelize: sequelize, // this bit is important
 });
 
-Drug.sync({});
+DrugStore.sync({});
 
-export default Drug;
+export default DrugStore;

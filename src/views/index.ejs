@@ -1,20 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title %>></title>
-  <link rel="stylesheet" href="/css/main.css" />
-</head>
-<body>
-  <form autocomplete="off" action="/drugs">
-    <div class="autocomplete" style="width:300px;">
-      <input id="myInput" type="text" name="myCountry" placeholder="Find your drugs nearby">
-    </div>
-    <input type="submit" value="Find">
-  </form>
 
-  <script src="/js/main.js"></script>
+<%- include('./partials/header.ejs') %>
 
-</body>
-</html>
+<form autocomplete="off" action="/drugs">
+  <div class="autocomplete" style="width:300px;">
+    <input id="myInput" type="text" name="q" placeholder="Find your drugs nearby">
+  </div>
+  <input type="submit" value="Find">
+</form>
+
+<script src="/js/main.js"></script>
+<%- include('./partials/footer.ejs') %>

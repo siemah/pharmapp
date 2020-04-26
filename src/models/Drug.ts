@@ -10,6 +10,7 @@ class Drug extends Model {
   public uuid!: string; 
   public name!: string;
   public barecode!: string;
+  public description!: string;
 
   // timestamps!
   public readonly createdAt!: Date;
@@ -35,6 +36,10 @@ Drug.init({
   barecode: {
     type: new DataTypes.STRING(128),
     allowNull: false,
+  },
+  description: {
+    type: new DataTypes.STRING(256),
+    allowNull: true,
   },
 }, {
   tableName: 'drugs',

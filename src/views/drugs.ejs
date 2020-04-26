@@ -1,0 +1,18 @@
+<%- include('./partials/header.ejs') %>
+
+<ul class="w3-ul w3-card-4">
+  <% drugs.forEach(drug => { %>
+  <li class="w3-display-container">
+    <a href="/drug/<%= drug.id %>">
+      <span class="w3-large"><%= drug.name %></span><br>
+      <span><%= drug.description.substr(0, 100) %></span>
+    </a>
+  </li>
+  <% })%>
+  <div class="w3-panel w3-pale-green w3-bottombar w3-border-green w3-border">
+    <p>:( Drug <%= q %> not available</p>
+    <p>Try another drugs or check the name of drug</p>
+  </div>
+</ul>
+
+<%- include('./partials/footer.ejs') %>

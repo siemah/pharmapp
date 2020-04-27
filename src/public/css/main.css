@@ -47,3 +47,13 @@ input[type=submit] {
   background-color: DodgerBlue !important;
   color: #ffffff;
 }
+
+.hidden {
+  display: none;
+}
+.block {
+  display: block;
+}
+.map-container {
+  min-height: 200px;
+}

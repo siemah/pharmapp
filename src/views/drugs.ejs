@@ -1,18 +1,110 @@
 <%- include('./partials/header.ejs') %>
 
 <ul class="w3-ul w3-card-4">
+  <% if(drugs.length) { %>
+
   <% drugs.forEach(drug => { %>
   <li class="w3-display-container">
-    <a href="/drug/<%= drug.id %>">
-      <span class="w3-large"><%= drug.name %></span><br>
-      <span><%= drug.description.substr(0, 100) %></span>
-    </a>
+    <span
+      class="w3-bar-item w3-button w3-xlarge w3-right w3-white w3-border w3-hover-blue w3-round-large js-modal__open"
+      data-id="<%= drug.id %>" role="button">grab it</span>
+    <span class="w3-xlarge"><%= drug.name %></span><br>
+    <span class="w3-opacity w3-medium"><%= drug.description.substr(0, 100) %></span>
   </li>
   <% })%>
+
+  <% } else { %>
   <div class="w3-panel w3-pale-green w3-bottombar w3-border-green w3-border">
     <p>:( Drug <%= q %> not available</p>
     <p>Try another drugs or check the name of drug</p>
   </div>
+  <% } %>
 </ul>
+
+<div id="mapmodal" class="w3-modal">
+  <form class="w3-modal-content w3-padding-16 js-form" method="POST" action="/order">
+    <header class="w3-container w3-teal w3-white">
+      <span class="w3-button w3-display-topright js-modal__close w3-red">&times;</span>
+      <h2>Pick your location</h2>
+      <h4 class="w3-medium">Where you expect from drugstore to bring your medication?</h4>
+    </header>
+    <div class="w3-container">
+      <div class="w3-panel w3-orange w3-text-white hidden js-fornm__alert">
+        <h3>Warning!</h3>
+        <p>Please pick your location before submiting.</p>
+      </div>
+      <div id="map" class="map-container w3-round"></div>
+    </div>
+    <footer class="w3-container w3-teal w3-white w3-padding-16">
+      <input type="hidden" name="drug-id" id='drug-id' />
+      <input type="hidden" name="lat" id='lat' />
+      <input type="hidden" name="lng" id='lng' />
+      <button class="w3-btn w3-blue w3-right">Send</button>
+    </footer>
+  </form>
+</div>
+
+<script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
+<script type="text/javascript" src="/js/map.js"></script>
+<script type="text/javascript">
+  const $btnTogglers = document.querySelectorAll('.js-modal__open');
+  const $modalClose = document.querySelector('.js-modal__close');
+  const $modal = document.querySelector('#mapmodal');
+  const $drugId = document.querySelector('#drug-id');
+  const $lat = document.querySelector('#lat');
+  const $lng = document.querySelector('#lng');
+  const $form = document.querySelector('.js-form');
+  const $alert = document.querySelector('.js-fornm__alert');
+  const _mapToken = "pk.eyJ1IjoiaGFtc2lrcGFzdG9yZSIsImEiOiJjazU3Y3o2YWkwMDZ5M25xaGdkczFqem05In0.300-AScmTiTRX60k6VWTEQ";
+  const _mapOptions = {
+    zoom: 3,
+  };
+  const map = new MapboxMap(_mapToken);
+  // attach a click event to each button to open modal
+  $btnTogglers.forEach(btn => {
+    btn.addEventListener('click', function (e) {
+      $modal.classList.add('block');
+      $drugId.value = this.dataset.id;
+    });
+  });
+  // close modal
+  $modalClose.addEventListener('click', function () {
+    $modal.classList.remove('block');
+  });
+  // display a map to pick a location(where user expect from drugstore to bring his medication)
+  map.init(0, 27, _mapOptions);
+  // select user location when click on map
+  map.map.on('click', function ({ lngLat, }) {
+    const { lat, lng } = lngLat;
+    $lat.value = lat;
+    $lng.value = lng;
+    map
+      .addMarker(lng, lat)
+      .addPopup('Grab my medication to here', '');
+  });
+  // submit the order
+  $form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const { action, method } = this;
+    if(!$lat.value || !$lng.value) {
+      $alert.classList.remove('hidden');
+    }
+    fetch(action, {
+      method,
+      body: JSON.stringify({
+        drug: $drugId.value,
+        lat: $lat.value,
+        lng: $lng.value,
+      }),
+    })
+      .then(res => res.json())
+      .then(res => {
+        console.log(res);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  });
+</script>
 
 <%- include('./partials/footer.ejs') %>

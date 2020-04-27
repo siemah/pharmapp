@@ -12,7 +12,7 @@ class DrugController {
       try {
         let drugs = await Drug.findAll({
           where: {
-            name: {[Op.substring]: `${drugnStart}`}
+            name: {[Op.startsWith]: `${drugnStart}`}
           }
         });
         resolve(drugs);

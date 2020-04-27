@@ -29,9 +29,9 @@
       <h4 class="w3-medium">Where you expect from drugstore to bring your medication?</h4>
     </header>
     <div class="w3-container">
-      <div class="w3-panel w3-orange w3-text-white hidden js-fornm__alert">
-        <h3>Warning!</h3>
-        <p>Please pick your location before submiting.</p>
+      <div class="w3-panel w3-text-white hidden js-fornm__alert">
+        <h3 id='status'>Warning!</h3>
+        <p id="message">Please pick your location before submiting.</p>
       </div>
       <div id="map" class="map-container w3-round"></div>
     </div>
@@ -82,11 +82,17 @@
       .addMarker(lng, lat)
       .addPopup('Grab my medication to here', '');
   });
+  function displayAlert(title, message, classname) {
+    $alert.classList.remove('hidden');
+    $alert.classList.add(classname);
+    $alert.querySelector('#status').textContent = title;
+    $alert.querySelector('#message').textContent = message;
+  }
   // submit the order
   $form.addEventListener('submit', function (e) {
     e.preventDefault();
     const { action, method } = this;
-    if(!$lat.value || !$lng.value) {
+    if (!$lat.value || !$lng.value) {
       $alert.classList.remove('hidden');
     }
     fetch(action, {
@@ -96,13 +102,18 @@
         lat: $lat.value,
         lng: $lng.value,
       }),
+      headers: {
+        "Content-Type": "application/json",
+      }
     })
       .then(res => res.json())
       .then(res => {
-        console.log(res);
+        const _class = res.status ? 'w3-green' : 'w3-blue';
+        const _title = res.status ? 'Information' : 'Warning';
+        displayAlert(_title, res.message, _class);
       })
       .catch(err => {
-        console.log(err);
+        displayAlert('Error', res.message, 'w3-red');
       });
   });
 </script>

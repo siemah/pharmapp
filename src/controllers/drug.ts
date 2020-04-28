@@ -12,12 +12,23 @@ class DrugController {
       try {
         let drugs = await Drug.findAll({
           where: {
-            name: {[Op.startsWith]: `${drugnStart}`}
+            name: { [Op.startsWith]: `${drugnStart}` }
           }
         });
         resolve(drugs);
       } catch (error) {
         reject([]);
+      }
+    });
+  }
+
+  addNew(name: string, description: string): Promise<boolean> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const _response = await Drug.create({ name, description });
+        resolve(_response.id ? true : false);
+      } catch (error) {
+        reject(false);
       }
     });
   }

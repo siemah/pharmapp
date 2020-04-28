@@ -71,7 +71,7 @@ export default function routesLoader(app: Application) {
     res.render('addstore', {
       title: 'Add New Drugstore'
     });
-  })
+  });
   app.post('/drugstore/add', async (req, res) => {
     const { name, phone_number, latitude, longitude } = req.body;
     if(!name || !phone_number || !latitude || !longitude) {
@@ -81,6 +81,35 @@ export default function routesLoader(app: Application) {
     }
     try {
       const drugstoreadded = DrugStoreController.addNew({ name, phone_number, latitude, longitude });
+      if(drugstoreadded){
+        return res.status(200).json({
+          status: 'SUCCESS',
+          message: `You just add ${name} successfully`
+        });
+      }
+      res.status(200).json({
+        message: `Please try again`
+      });
+    } catch (error) {
+      res.status(400).json({
+        message: `Please try after a moment`
+      });
+    }
+  });
+  app.get('/add-drug', (req, res)=>{
+    res.render('adddrug', {
+      title: 'Add New Drug'
+    });
+  })
+  app.post('/drug/add', async (req, res) => {
+    const { name, description } = req.body;
+    if(!name || !description) {
+      return res.status(400).json({
+        message: 'Please fill all fileds',
+      });
+    }
+    try {
+      const drugstoreadded = DrugController.addNew(name, description);
       if(drugstoreadded){
         return res.status(200).json({
           status: 'SUCCESS',

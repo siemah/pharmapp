@@ -57,3 +57,18 @@ input[type=submit] {
 .map-container {
   min-height: 200px;
 }
+
+.main-block {
+  min-height: calc(100vh - 45px);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.main-block > * {
+  width: 100%;
+}
+.w3-bar .w3-bar-item,
+.w3-bar .w3-button {
+  padding: 1rem !important;
+}

@@ -4,6 +4,17 @@ import compression from 'compression';
 import { resolve, join, } from 'path';
 
 /**
+ * not found url
+ * @param req 
+ * @param res 
+ */
+export function notFound404(req: Request, res: Response) {
+  res.render('404', {
+    title: 'Not Found 404'
+  });
+}
+
+/**
  * error handler for express app
  */
 export function errorHandler(err: any, req: Request, res: Response, next: NextFunction) {

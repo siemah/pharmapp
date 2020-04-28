@@ -1,5 +1,5 @@
 import { Application, } from "express";
-import { errorHandler } from "./middleware";
+import { errorHandler, notFound404 } from "./middleware";
 import DrugController from "../controllers/drug";
 import DrugStore from "../models/Drugstore";
 import drugslist from "./drugslist";
@@ -8,33 +8,18 @@ import { randomNum } from "../helpers/tools";
 import StoresDrugsAssoc from "../models/StoresDrugsAssoc";
 import DrugStoreController from '../controllers/drugstore';
 import Sms from '../controllers/sms';
+import drugRouter from "../routes/drug";
+import drugstoreRouter from "../routes/drugstore";
 
 export default function routesLoader(app: Application) {
+
+  app.use(drugRouter);
+  app.use(drugstoreRouter);
+
   // home page
   app.get('/', (req, res, next) => {
     res.render('index', {
       title: 'Drugmapp',
-    });
-  });
-  // searching for medicament
-  app.get('/drugs', async (req, res, next) => {
-    let drugs = [];
-    let { q = '' } = req.query;
-    q = q?.toString().trim();
-
-    if (!q || !q.length) {
-      return res.redirect('/');
-    }
-    try {
-      drugs = await DrugController.findDrugsBy(q);
-    } catch (error) {
-      drugs = [];
-    }
-
-    res.render('drugs', {
-      title: `${q} - Drugmapp`,
-      drugs,
-      q,
     });
   });
   // handling order submiting
@@ -67,122 +52,66 @@ export default function routesLoader(app: Application) {
       });
     }
   });
-  app.get('/add-drugstore', (req, res)=>{
-    res.render('addstore', {
-      title: 'Add New Drugstore'
-    });
-  });
-  app.post('/drugstore/add', async (req, res) => {
-    const { name, phone_number, latitude, longitude } = req.body;
-    if(!name || !phone_number || !latitude || !longitude) {
-      return res.status(400).json({
-        message: 'Please fill all fileds',
-      });
-    }
-    try {
-      const drugstoreadded = DrugStoreController.addNew({ name, phone_number, latitude, longitude });
-      if(drugstoreadded){
-        return res.status(200).json({
-          status: 'SUCCESS',
-          message: `You just add ${name} successfully`
-        });
-      }
-      res.status(200).json({
-        message: `Please try again`
-      });
-    } catch (error) {
-      res.status(400).json({
-        message: `Please try after a moment`
-      });
-    }
-  });
-  app.get('/add-drug', (req, res)=>{
-    res.render('adddrug', {
-      title: 'Add New Drug'
-    });
-  })
-  app.post('/drug/add', async (req, res) => {
-    const { name, description } = req.body;
-    if(!name || !description) {
-      return res.status(400).json({
-        message: 'Please fill all fileds',
-      });
-    }
-    try {
-      const drugstoreadded = DrugController.addNew(name, description);
-      if(drugstoreadded){
-        return res.status(200).json({
-          status: 'SUCCESS',
-          message: `You just add ${name} successfully`
-        });
-      }
-      res.status(200).json({
-        message: `Please try again`
-      });
-    } catch (error) {
-      res.status(400).json({
-        message: `Please try after a moment`
-      });
-    }
-  });
+  
   // all thos routes below are just for adding medicaments, 
   // drugstores and association between them
-  app.get('/put-drugs', async (req, res) => {
-    let _p: Promise<Drug>[] = [];
-    try {
-      drugslist.forEach(drug => {
-        _p.push(Drug.create({
-          name: drug,
-          description: drug,
-        }));
-      });
-      await Promise.all(_p);
-      res.json('done');
-    } catch (error) {
-      console.log(error)
-      res.end();
-    }
-  });
+  // app.get('/put-drugs', async (req, res) => {
+  //   let _p: Promise<Drug>[] = [];
+  //   try {
+  //     drugslist.forEach(drug => {
+  //       _p.push(Drug.create({
+  //         name: drug,
+  //         description: drug,
+  //       }));
+  //     });
+  //     await Promise.all(_p);
+  //     res.json('done');
+  //   } catch (error) {
+  //     console.log(error)
+  //     res.end();
+  //   }
+  // });
 
-  app.get('/put-drugstores', async (req, res) => {
-    let _p: Promise<DrugStore>[] = [];
-    try {
-      for (let i = 0; i < 90; i++) {
-        const longitude = randomNum(10, -7);
-        const latitude = randomNum(36, 19);
-        _p.push(DrugStore.create({
-          name: "pharma " + i,
-          phone_number: '771356409',
-          latitude,
-          longitude,
-        }));
-      }
-      await Promise.all(_p);
-      res.json('done');
-    } catch (error) {
-      console.log(error)
-      res.end();
-    }
-  });
+  // app.get('/put-drugstores', async (req, res) => {
+  //   let _p: Promise<DrugStore>[] = [];
+  //   try {
+  //     for (let i = 0; i < 90; i++) {
+  //       const longitude = randomNum(10, -7);
+  //       const latitude = randomNum(36, 19);
+  //       _p.push(DrugStore.create({
+  //         name: "pharma " + i,
+  //         phone_number: '771356409',
+  //         latitude,
+  //         longitude,
+  //       }));
+  //     }
+  //     await Promise.all(_p);
+  //     res.json('done');
+  //   } catch (error) {
+  //     console.log(error)
+  //     res.end();
+  //   }
+  // });
 
-  app.get('/put-drug-stores-assoc', async (req, res) => {
-    let _p: Promise<StoresDrugsAssoc>[] = [];
-    try {
-      for (let i = 0; i < 1000; i++) {
-        const drug_id = randomNum(1, 1000);
-        const drugstore_id = randomNum(1, 90);
-        _p.push(StoresDrugsAssoc.create({
-          drug_id,
-          drugstore_id,
-        }));
-      }
-      await Promise.all(_p);
-      res.json('done');
-    } catch (error) {
-      console.log(error)
-      res.end();
-    }
-  });
+  // app.get('/put-drug-stores-assoc', async (req, res) => {
+  //   let _p: Promise<StoresDrugsAssoc>[] = [];
+  //   try {
+  //     for (let i = 0; i < 1000; i++) {
+  //       const drug_id = randomNum(1, 1000);
+  //       const drugstore_id = randomNum(1, 90);
+  //       _p.push(StoresDrugsAssoc.create({
+  //         drug_id,
+  //         drugstore_id,
+  //       }));
+  //     }
+  //     await Promise.all(_p);
+  //     res.json('done');
+  //   } catch (error) {
+  //     console.log(error)
+  //     res.end();
+  //   }
+  // });
   // handling error
+  app.use(notFound404);
   app.use(errorHandler);
 };

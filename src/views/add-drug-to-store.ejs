@@ -1,0 +1,72 @@
+<%- include('./partials/header.ejs') %>
+
+<form class="w3-container w3-card-4 js-form" method="POST" action='/drugstore/add-drug'>
+  <h1>Add Drug To Your Drugstore</h1>
+  <div class="w3-panel w3-text-white hidden js-form__alert">
+    <h3 id='status'></h3>
+    <p id="message"></p>
+  </div>
+  <p>
+    <label for='name' class="w3-text-grey">Select Your Drugstore</label>
+    <select class="w3-select w3-border" name="store">
+      <option value="" disabled selected>Choose your drugstore</option>
+      <% drugstores.forEach(store => { %>
+        <option value="<%= store.id %>"><%= store.name %></option>
+      <% }) %>
+    </select>
+  </p>
+  <p>
+    <label for='description' class="w3-text-grey">Select The Drug</label>
+    <select class="w3-select w3-border" name="drug">
+      <option value="" disabled selected>Choose drug</option>
+      <% drugs.forEach(drug => { %>
+        <option value="<%= drug.id %>"><%= drug.name %></option>
+      <% }) %>
+    </select>
+  </p>
+  <p>
+    <button type="submit" class="w3-btn w3-padding w3-teal" style="width:120px">Send &nbsp; ❯</button>
+  </p>
+</form>
+<script type="text/javascript">
+  const $alert = document.querySelector('.js-form__alert');
+  const $form = document.querySelector('.js-form');
+  function displayAlert(title, message, classname) {
+    $alert.classList.remove('hidden');
+    $alert.classList.remove('w3-green');
+    $alert.classList.remove('w3-orange');
+    $alert.classList.remove('w3-red');
+    $alert.classList.add(classname);
+    $alert.querySelector('#status').textContent = title;
+    $alert.querySelector('#message').textContent = message;
+  }
+  $form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    fetch(this.action, {
+      method: this.method,
+      body: JSON.stringify({
+        drug: this.drug.value,
+        store: this.store.value
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      }
+    })
+      .then(r => r.json())
+      .then(res => {
+        let _class, _title
+        if (res.status) {
+          _class = 'w3-green';
+          _title = 'Information';
+        } else {
+          _class = 'w3-orange';
+          _title = 'Warning';
+        }
+        displayAlert(_title, res.message, _class);
+      })
+      .catch(err => {
+        displayAlert('Error', 'Please try again', 'w3-red');
+      });
+  })
+</script>
+<%- include('./partials/footer.ejs') %>

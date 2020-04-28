@@ -1,5 +1,6 @@
 import _db from '../config/db';
 import DrugStore from '../models/Drugstore';
+import StoresDrugsAssoc from '../models/StoresDrugsAssoc';
 
 interface StoreDrugAssoc {
   phone_number: string;
@@ -12,11 +13,33 @@ interface DrugStoreObject {
   name: string;
 }
 class DrugStoreController {
-
+  
+  /**
+   * adding new drugstore
+   * @param data 
+   */
   addNew(data: DrugStoreObject): Promise<boolean> {
     return new Promise( async (res, rej) => {
       try {
         const _response = await DrugStore.create(data);
+        res(_response.id ? true : false);
+      } catch (error) {
+        rej(false);
+      }
+    });
+  }
+
+  /**
+   * adding drug to drugstore
+   * @param data 
+   */
+  addDrugToStore(drug: number, store: number): Promise<boolean> {
+    return new Promise( async (res, rej) => {
+      try {
+        const _response = await StoresDrugsAssoc.create({
+          drug_id: drug,
+          drugstore_id: store,
+        });
         res(_response.id ? true : false);
       } catch (error) {
         rej(false);

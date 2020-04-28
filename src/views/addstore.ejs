@@ -1,0 +1,89 @@
+<%- include('./partials/header.ejs') %>
+
+<form class="w3-container w3-card-4 js-form" method="POST" action='/drugstore/add'>
+  <h1>Add your drugstore</h1>
+  <div class="w3-panel w3-text-white hidden js-form__alert">
+    <h3 id='status'>Warning!</h3>
+    <p id="message">Please pick your location before submiting.</p>
+  </div>
+  <p>
+    <label for='name' class="w3-text-grey">Name</label>
+    <input id='name' name='name' class="w3-input w3-border" type="text" required>
+  </p>
+  <p>
+    <label for='phone_number' class="w3-text-grey">Phone Number(where you receive sms)</label>
+    <input id='phone_number' name='phone_number' class="w3-input w3-border" type="text" required>
+  </p>
+  <p>
+    <label class="w3-text-grey">Add Drugstore Location On Map</label>
+    <div id="map" class="map-container w3-round"></div>
+  </p>
+  <p>
+    <input type="hidden" name="latitude" id='lat' />
+    <input type="hidden" name="longitude" id='lng' />
+    <button type="submit" class="w3-btn w3-padding w3-teal" style="width:120px">Send &nbsp; ❯</button>
+  </p>
+</form>
+<script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
+<script type="text/javascript" src="/js/map.js"></script>
+<script type="text/javascript">
+  const $lat = document.querySelector('#lat');
+  const $lng = document.querySelector('#lng');
+  const $alert = document.querySelector('.js-form__alert');
+  const $form = document.querySelector('.js-form');
+  const _mapToken = "pk.eyJ1IjoiaGFtc2lrcGFzdG9yZSIsImEiOiJjazU3Y3o2YWkwMDZ5M25xaGdkczFqem05In0.300-AScmTiTRX60k6VWTEQ";
+  const _mapOptions = {
+    zoom: 3,
+  };
+  const map = new MapboxMap(_mapToken);
+  map.init(0, 27, _mapOptions);
+  // select user location when click on map
+  map.map.on('click', function ({ lngLat, }) {
+    const { lat, lng } = lngLat;
+    $lat.value = lat;
+    $lng.value = lng;
+    map
+      .addMarker(lng, lat)
+      .addPopup($form.name.value, 'Location of drugstore');
+  });
+  function displayAlert(title, message, classname) {
+    $alert.classList.remove('hidden');
+    $alert.classList.remove('w3-green');
+    $alert.classList.remove('w3-orange');
+    $alert.classList.remove('w3-red');
+    $alert.classList.add(classname);
+    $alert.querySelector('#status').textContent = title;
+    $alert.querySelector('#message').textContent = message;
+  }
+  $form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    fetch(this.action, {
+      method: this.method,
+      body: JSON.stringify({
+        latitude: $lat.value,
+        longitude: $lng.value,
+        name: this.name.value,
+        phone_number: this.phone_number.value
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      }
+    })
+      .then(r => r.json())
+      .then(res => {
+        let _class, _title
+        if(res.status) {
+          _class = 'w3-green';
+         _title = 'Information';
+        } else {
+          _class = 'w3-orange';
+         _title = 'Warning';
+        }
+        displayAlert(_title, res.message, _class);
+      })
+      .catch(err => {
+        displayAlert('Error', 'Please try again', 'w3-red');
+      });
+  })
+</script>
+<%- include('./partials/footer.ejs') %>

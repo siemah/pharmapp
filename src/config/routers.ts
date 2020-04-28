@@ -49,11 +49,10 @@ export default function routesLoader(app: Application) {
     // get the nearest drugstores to user location where distance are under 16km around 10miles
     try {
       const _r = await DrugStoreController.findNearestStore(lat, lng, drug, 10);
-      console.log(_r)
       if (_r?.phone_number) {
-        // await Sms
-        //   .buildSmsContent(_r.drug_name, lat, lng)
-        //   .sendTo(_r.phone_number);
+        await Sms
+          .buildSmsContent(_r.drug_name, lat, lng)
+          .sendTo(_r.phone_number);
         return res.status(200).json({
           status: 'SUCCESS',
           message: 'The nearest drugstore to your location are notified to grab your medication'
@@ -65,6 +64,35 @@ export default function routesLoader(app: Application) {
     } catch ({ message }) {
       return res.status(400).json({
         message,
+      });
+    }
+  });
+  app.get('/add-drugstore', (req, res)=>{
+    res.render('addstore', {
+      title: 'Add New Drugstore'
+    });
+  })
+  app.post('/drugstore/add', async (req, res) => {
+    const { name, phone_number, latitude, longitude } = req.body;
+    if(!name || !phone_number || !latitude || !longitude) {
+      return res.status(400).json({
+        message: 'Please fill all fileds',
+      });
+    }
+    try {
+      const drugstoreadded = DrugStoreController.addNew({ name, phone_number, latitude, longitude });
+      if(drugstoreadded){
+        return res.status(200).json({
+          status: 'SUCCESS',
+          message: `You just add ${name} successfully`
+        });
+      }
+      res.status(200).json({
+        message: `Please try again`
+      });
+    } catch (error) {
+      res.status(400).json({
+        message: `Please try after a moment`
       });
     }
   });

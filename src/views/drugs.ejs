@@ -26,10 +26,10 @@
     <header class="w3-container w3-teal w3-white">
       <span class="w3-button w3-display-topright js-modal__close w3-red">&times;</span>
       <h2>Pick your location</h2>
-      <h4 class="w3-medium">Where you expect from drugstore to bring your medication?</h4>
+      <h4 class="w3-medium">Where you expect from drugstore to deliver your medication?</h4>
     </header>
     <div class="w3-container">
-      <div class="w3-panel w3-text-white hidden js-fornm__alert">
+      <div class="w3-panel w3-text-white hidden js-form__alert">
         <h3 id='status'>Warning!</h3>
         <p id="message">Please pick your location before submiting.</p>
       </div>
@@ -54,7 +54,7 @@
   const $lat = document.querySelector('#lat');
   const $lng = document.querySelector('#lng');
   const $form = document.querySelector('.js-form');
-  const $alert = document.querySelector('.js-fornm__alert');
+  const $alert = document.querySelector('.js-form__alert');
   const _mapToken = "pk.eyJ1IjoiaGFtc2lrcGFzdG9yZSIsImEiOiJjazU3Y3o2YWkwMDZ5M25xaGdkczFqem05In0.300-AScmTiTRX60k6VWTEQ";
   const _mapOptions = {
     zoom: 3,

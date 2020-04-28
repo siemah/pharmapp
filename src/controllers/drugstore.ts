@@ -1,11 +1,28 @@
 import _db from '../config/db';
+import DrugStore from '../models/Drugstore';
 
 interface StoreDrugAssoc {
   phone_number: string;
   drug_name: string;
 }
-
+interface DrugStoreObject {
+  phone_number: string;
+  latitude: string;
+  longitude: string;
+  name: string;
+}
 class DrugStoreController {
+
+  addNew(data: DrugStoreObject): Promise<boolean> {
+    return new Promise( async (res, rej) => {
+      try {
+        const _response = await DrugStore.create(data);
+        res(_response.id ? true : false);
+      } catch (error) {
+        rej(false);
+      }
+    });
+  }
 
   /**
    * find nearest drugstore who has drug

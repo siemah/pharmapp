@@ -90,3 +90,7 @@ typings/
 # DynamoDB Local files
 .dynamodb/
 .todo
+
+# build directories
+build/
+dist/

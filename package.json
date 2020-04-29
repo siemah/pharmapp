@@ -1,17 +1,14 @@
 {
   "name": "drupmapp",
   "version": "1.0.0",
-  "main": "dist/index.js",
+  "main": "dist/server.js",
   "author": "siemah",
   "license": "MIT",
   "keywords": [],
   "description": "",
   "repository": "https://github.com/siemah/drugmapp.git",
   "scripts": {
-    "start": "node dist/server.js",
-    "dev": "nodemon src/server.ts",
-    "test": "jest --runInBand --watch --ci --config",
-    "build": "tsc -p ."
+    "dev": "nodemon src/server.ts"
   },
   "dependencies": {
     "compression": "^1.7.4",
